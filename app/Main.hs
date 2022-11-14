@@ -18,66 +18,95 @@ data DotPattern =
   DotPattern :* DotPattern |
   Stack [ DotPattern ] |
   DotPattern :- Integer
+ deriving (Show)
 
-patterns = [ (Ring 8 :- 1) :* (Grid 2 2 :- 1)
-           , Grid 8 4
-           , Ring 3
-           , Ring 5
-           , Ring 6
-           , Ring 6 :* Grid 2 1
-           , Ring 6 :* Grid 3 1
-           , Ring 6 :* Grid 2 2
-           , Ring 6 :* Grid 2 2 :- 1
-           , Grid 2 1 :* Grid 4 4
-           , Grid 3 2
-           , Ring 3 :* Grid 2 1
-           , Grid 2 1 :* Grid 2 1 :* Grid 1 2
-           , Grid 2 1 :* Grid 1 2 :* Grid 1 2
-           , Ring 3 :* Ring 3 :* Ring 3
-           , Grid 1 2 :* Grid 5 2
-           , Grid 4 4 :- 1
-           , Ring 4
-           , Ring 4 :* Ring 4
-           , Grid 2 2
-           , Grid 2 2 :- 1
-           , Grid 3 3 :- 1
-           , Ring 8 :- 1
-           , Grid 2 2 :* (Grid 2 2 :* Grid 2 2)
-           , Grid 3 3 :* (Grid 3 3) :- 1
-           , (Grid 3 3 :- 1) :* Grid 3 3
-           , Grid 4 3 :- 1
-           , Grid 3 3 :* Ring 5
-           , Grid 2 2 :* Grid 3 3
-           , Grid 7 7 
-           , Grid 3 3 :* Grid 2 2
-           , Ring 5 :* Ring 3
-           , Ring 5 :* Ring 5
-           , Ring 5 :* Ring 4
-           , Ring 5 :* Grid 3 3
-           , Ring 5 :* (Grid 3 3 :- 1)
-           , Grid 2 1 :* Ring 8
-           , Grid 3 3 :* (Ring 8 :- 1)
-           , Grid 2 2 :* Grid 5 5
-           , Grid 2 2 :* Grid 5 5 :- 1
-           , Grid 2 2 :* (Grid 5 5 :- 1)
-           , Ring 5 :* Grid 1 2
-           , Ring 5 :* Grid 5 4 
-           , Ring 5 :* Grid 5 5
-           , Ring 4 :* Grid 2 2
-           , Grid 2 1 :* (Grid 2 2 :* Grid 5 5)
-           , Grid 2 2 :* (Grid 2 2 :* Grid 5 5)
-           , Grid 2 2 :* (Grid 2 2 :* Grid 5 5) :- 1
-           , (Grid 2 2 :- 1) :* (Grid 2 2 :* Grid 5 5)
-           ]
-
-cardWidth :: Double
-cardWidth = 158.4567
-
-cardHeight :: Double
-cardHeight = 246.8976
+patterns :: [DotPattern] 
+patterns =
+ [ Grid 2 1 :- 1
+ , Grid 2 1 
+ , Grid 2 2 :- 1 -- = 3
+ , Ring 3 -- = 3
+ , Grid 2 2 -- = 4
+ , Ring 4 -- = 4
+ , Ring 5 -- = 5
+ , Grid 3 2 -- = 6
+ , Ring 3 :* Grid 2 1 -- = 6
+ , Ring 6 -- = 6
+ , Grid 2 5 :- 3 -- = 7
+ , Grid 3 3 :- 2 -- = 7
+ , Ring 8 :- 1 -- = 7
+ , (Grid 2 1 :* Grid 2 1) :* Grid 1 2 -- = 8
+ , Grid 3 3 :- 1 -- = 8
+ , Grid 3 3 
+ , Ring 5 :* Grid 1 2 -- = 10
+ , Grid 4 3 :- 1 -- = 11
+ , Grid 3 5 :- 3 -- = 12
+ , Ring 6 :* Grid 2 1 -- = 12
+ , Grid 4 4 :- 3 -- = 13
+ , Grid 2 1 :* Grid 4 2 :- 2 
+ , Grid 4 4 :- 1 -- = 15
+ , (Ring 4 :* Ring 4) :- 1 -- = 15
+ , Ring 5 :* Ring 3 -- = 15
+ , (Ring 6 :- 1) :* Grid 3 1 -- = 15
+ , ((Grid 1 2 :* Grid 2 1) :* Grid 2 1) :* Grid 1 2 -- = 16
+ , Grid 2 1 :* Ring 8 -- = 16
+ , Ring 4 :* Grid 2 2 -- = 16
+ , Ring 4 :* Ring 4 -- = 16
+ , (Ring 6 :* Grid 3 1) :- 1 -- = 17
+ , (Ring 3 :* (Ring 3 :- 1)) :* Ring 3 -- = 18
+ , Ring 6 :* Grid 3 1 -- = 18
+ , (Grid 1 2 :* Grid 5 2) :- 1 -- = 19
+ , Grid 1 2 :* Grid 5 2 -- = 20
+ , Ring 5 :* Ring 4 -- = 20
+ , (Ring 8 :- 1) :* (Grid 2 2 :- 1) -- = 21
+ , (Ring 6 :* Grid 2 2) :- 1 -- = 23
+ , (Ring 3 :* Ring 4) :* Ring 2 -- = 24
+ , Ring 6 :* Grid 2 2 -- = 24
+ , ((Ring 3 :* Ring 3) :* Ring 3) :- 2 -- = 25
+ , Ring 5 :* Ring 5 -- = 25
+ , (Ring 3 :* Ring 3) :* Ring 3 -- = 27
+ , Grid 2 1 :* (Grid 4 4 :- 1) -- = 30
+ , (Grid 2 1 :* Grid 4 4) :- 2 -- = 30
+ , Grid 2 1 :* Grid 4 4 -- = 32
+ , Grid 8 4 -- = 32
+ , Grid 2 2 :* Grid 3 3 -- = 36
+ , Grid 3 3 :* Grid 2 2 -- = 36
+ , Grid 3 3 :* Ring 4 -- = 36
+ , (Ring 3 :* Ring 4) :* Ring 3 -- = 36
+ , (Ring 4 :* Ring 3) :* Ring 3 -- = 36
+ , Ring 5 :* (Grid 3 3 :- 1) -- = 40
+ , Grid 3 3 :* Ring 5 -- = 45
+ , Ring 5 :* Grid 3 3 -- = 45
+ , Grid 7 7 -- = 49
+ , Ring 8 :* (Ring 8 :- 1) -- = 56
+ , Grid 3 3 :* (Ring 8 :- 1) -- = 63
+ , Grid 2 2 :* (Grid 2 2 :* Grid 2 2) -- = 64
+ , (Grid 3 3 :- 1) :* Grid 3 3 -- = 72
+ , (Grid 3 3 :* Grid 3 3) :- 1 -- = 80
+ , (Grid 3 3 :* Grid 3 3)  -- = 81
+ , Grid 2 2 :* (Grid 5 5 :- 1) -- = 96
+ , (Grid 2 2 :* Grid 5 5) :- 1 -- = 99
+ , Grid 2 2 :* Grid 5 5 -- = 100
+ , Ring 5 :* Grid 5 4 -- = 100
+ , Ring 5 :* Grid 5 5 -- = 125
+ , Grid 2 1 :* (Grid 2 2 :* Grid 5 5) -- = 200
+ , (Grid 2 2 :- 1) :* (Grid 2 2 :* Grid 5 5) -- = 300
+ , (Grid 2 2 :* (Grid 2 2 :* Grid 5 5)) :- 1 -- = 399
+ , Grid 2 2 :* (Grid 2 2 :* Grid 5 5) :- 5
+ , Grid 2 2 :* (Grid 2 2 :* Grid 5 5) -- = 400
+ ]
 
 inch :: Double
 inch = 72
+
+mm :: Double
+mm = 2.83465
+  
+cardWidth :: Double
+cardWidth = 70 * mm
+
+cardHeight :: Double
+cardHeight = 70 * mm 
 
 bleedMargin :: Double
 bleedMargin = 0.25 * inch
@@ -93,7 +122,7 @@ withCardContext draw = do
   where uniformScale x = scale x x
     
 showBorders :: Bool
-showBorders = True
+showBorders = False 
 
 centerText :: AnyFont -> Text -> Draw ()
 centerText font s = do
@@ -102,10 +131,10 @@ centerText font s = do
   let w = textWidth f s
   let h = getHeight font p 
   let d = getDescent font p
-  let factor = 100 / w
+  let factor = min (100 / w) (100 / h)
   withNewContext $ do
-    applyMatrix $ translate ((-50) :+ 0)
     applyMatrix $ scale factor factor
+    applyMatrix $ translate ((-w/2) :+ 0)
     applyMatrix $ translate (0 :+ ((d-h)/2))
     drawText $ text f 0 0 s
 
@@ -143,8 +172,8 @@ listPattern (Ring count) = do
   pure $ do 
     applyMatrix $ translate $ 50 :+ 50 
     applyMatrix $ rotate (Degree ((360 :: PDFFloat) * (fromIntegral i) / (fromIntegral count)))
-    let s = sin (pi / fromIntegral count) / 2.2
-    applyMatrix $ translate $ (50 * (1 - s)) :+ 0
+    let s = sin (pi / fromIntegral count) / 2.4
+    applyMatrix $ translate $ (50 * (1 - s) * 1.05) :+ 0
     applyMatrix $ scale s s
     applyMatrix $ translate $ (-50) :+ (-50)
 
@@ -199,17 +228,27 @@ createPageContent pattern font page = drawWithPage page $ do
       stroke $ Rectangle 0 (100 :+ 100)
     drawPattern pattern
 
-myDocument :: AnyFont -> PDF ()
-myDocument font = do
+myFrontDocument :: AnyFont -> PDF ()
+myFrontDocument font = do
+    forM_ patterns $ \pattern -> do
+      page <- addPage Nothing
+      createPageContent pattern font page
+
+myBackDocument :: AnyFont -> PDF ()
+myBackDocument font = do
     forM_ patterns $ \pattern -> do
       page' <- addPage Nothing
       createAnswerContent pattern font page'
-      page <- addPage Nothing
-      createPageContent pattern font page
  
 main :: IO()
 main = do
+    forM_ patterns $ \pattern -> do
+      putStrLn $ ", " ++ (show pattern) ++ " -- = " ++ (show $ countDots pattern)
+
     let rect = PDFRect 0 0 cardWidth cardHeight
     Right helvetica <- mkStdFont Helvetica_Bold
-    runPdf "cards.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
-        myDocument helvetica
+    runPdf "front.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
+        myFrontDocument helvetica
+    runPdf "back.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
+        myBackDocument helvetica
+  
