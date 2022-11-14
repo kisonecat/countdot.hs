@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 
 module Main where
 
@@ -245,8 +245,7 @@ myFrontDocument patterns = do
 
 myBackDocument :: [DotPattern] -> AnyFont -> AnyFont -> PDF ()
 myBackDocument patterns font font2 = do
-    forM_ [1 .. length patterns] $ \i -> do
-      let pattern = patterns !! (i - 1)
+    forM_ (zip [1..] patterns) $ \(i :: Integer, pattern) -> do
       let label = pack $ (show i) ++ "/" ++ (show $ length patterns)
       page' <- addPage Nothing
       createAnswerContent pattern label font font2 page'
