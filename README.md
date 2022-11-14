@@ -26,6 +26,33 @@ data DotPattern =
   DotPattern :- Integer
 ```
 
+For example, to create a grid, you could use `Grid 3 4` which would produce
+
+![Output of Grid 3 4](./samples/card001.png)
+
+For example, to place dots in a circle, you could use `Grid 5` which would produce
+
+![Output of Ring 5](./samples/card002.png)
+
+The interesting thing about `DotPattern`s is that you can combnie these with "algebraic" operators like `:*` to "multiply" two dot patterns, e.g., `Grid 2 2 :* Ring 3` produces
+
+![Output of Grid 2 2 :* Ring 3](./samples/card003.png)
+
+which is a 2-by-2 grid with each of those four spots containing a circle of three dots.
+
+Another example is `Ring 5 :* Grid 2 1`,
+
+![Output of Ring 5 :* Grid 2 1](./samples/card004.png)
+
+There is also a subtraction operator `:-` which takes away some number of dots.
+For example, `(Ring 5 :- 1) :* Grid 2 1` starts with a circle of five dots, removed one using `:- 1`, and then replaces each of those dots with a 2-by-1 grid.
+
+![Output of (Ring 5 :- 1) :* Grid 2 1](./samples/card005.png)
+
+If we had instead chosen to use `Ring 5 :* Grid 2 1 :- 1`, we would have again started with five dots, replace each of those dots with a 2-by-1 grid, and *then* we remove one dot with `:- 1`.
+
+![Output of Ring 5 :* Grid 2 1 :- 1](./samples/card006.png)
+
 ## Generating the cards
 
 To produce the `front000.tiff` and `back000.tiff` files:
