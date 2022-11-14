@@ -13,8 +13,18 @@ data DotPattern =
   DotPattern :- Integer
  deriving (Show)
 
-patterns :: [DotPattern] 
-patterns =
+samplePatterns :: [DotPattern] 
+samplePatterns =
+  [ Grid 3 4 
+  , Ring 5
+  , Grid 2 2 :* Ring 3
+  , Ring 5 :* Grid 2 1
+  , (Ring 5 :- 1) :* Grid 2 1
+  , Ring 5 :* Grid 2 1 :- 1
+  ]
+
+cardPatterns :: [DotPattern] 
+cardPatterns =
  [ Grid 2 1 :- 1
  , Grid 2 1 
  , Grid 2 2 :- 1 -- = 3
@@ -227,14 +237,14 @@ createPageContent pattern page = drawWithPage page $ do
       stroke $ Rectangle 0 (100 :+ 100)
     drawPattern pattern
 
-myFrontDocument :: PDF ()
-myFrontDocument = do
+myFrontDocument :: [DotPattern] -> PDF ()
+myFrontDocument patterns = do
     forM_ patterns $ \pattern -> do
       page <- addPage Nothing
       createPageContent pattern page
 
-myBackDocument :: AnyFont -> AnyFont -> PDF ()
-myBackDocument font font2 = do
+myBackDocument :: [DotPattern] -> AnyFont -> AnyFont -> PDF ()
+myBackDocument patterns font font2 = do
     forM_ [1 .. length patterns] $ \i -> do
       let pattern = patterns !! (i - 1)
       let label = pack $ (show i) ++ "/" ++ (show $ length patterns)
@@ -243,14 +253,23 @@ myBackDocument font font2 = do
  
 main :: IO()
 main = do
-    forM_ patterns $ \pattern -> do
+    forM_ cardPatterns $ \pattern -> do
       putStrLn $ ", " ++ (show pattern) ++ " -- = " ++ (show $ countDots pattern)
 
     let rect = PDFRect 0 0 cardWidth cardHeight
+
     Right helveticaBold <- mkStdFont Helvetica_Bold
-    Right helvetica <- mkStdFont Courier  
+    Right courier <- mkStdFont Courier  
+
     runPdf "front.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
-        myFrontDocument 
+        myFrontDocument cardPatterns
+
     runPdf "back.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
-        myBackDocument helveticaBold helvetica
+        myBackDocument cardPatterns helveticaBold courier
+
+    runPdf "sample-front.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
+        myFrontDocument samplePatterns
+
+    runPdf "sample-back.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
+        myBackDocument samplePatterns helveticaBold courier
   
