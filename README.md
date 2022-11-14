@@ -11,10 +11,10 @@ cards.
 ## Where to purchase?
 
 You can purchase a set of cards from 
-[makeplayingcards.com](https://www.makeplayingcards.com/sell/marketplace/countdot.html).
+[makeplayingcards.com](https://www.makeplayingcards.com/sell/marketplace/countdot.html) using a [collection of dot patterns](https://github.com/kisonecat/countdot.hs/blob/main/app/Main.hs#L18-L89).
 
 
-## Design
+## Algebra for dot patterns 
 
 These patterns of dots are built using some "algebraic" notation, specifically
 
@@ -45,11 +45,11 @@ Another example is `Ring 5 :* Grid 2 1`,
 ![Output of Ring 5 :* Grid 2 1](./samples/card004.png)
 
 There is also a subtraction operator `:-` which takes away some number of dots.
-For example, `(Ring 5 :- 1) :* Grid 2 1` starts with a circle of five dots, removed one using `:- 1`, and then replaces each of those dots with a 2-by-1 grid.
+For example, `(Ring 5 :- 1) :* Grid 2 1` starts with a circle of five dots, removes one using `:- 1`, and then replaces each of those dots with a 2-by-1 grid.
 
 ![Output of (Ring 5 :- 1) :* Grid 2 1](./samples/card005.png)
 
-If we had instead chosen to use `Ring 5 :* Grid 2 1 :- 1`, we would have again started with five dots, replace each of those dots with a 2-by-1 grid, and *then* we remove one dot with `:- 1`.
+If we had instead chosen to use `Ring 5 :* Grid 2 1 :- 1`, we would have again started with five dots, replaced each of those dots with a 2-by-1 grid, and *then* we removed one dot with `:- 1`.
 
 ![Output of Ring 5 :* Grid 2 1 :- 1](./samples/card006.png)
 
