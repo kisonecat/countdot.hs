@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, MultiParamTypeClasses, OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Main where
 
@@ -6,17 +6,10 @@ import Graphics.PDF
 import Control.Monad
 import Data.Text (pack, Text)
 
--- grid(2,2) * circle(5)
--- circle(5) * grid(1,2)
--- (circle(5) - 1) * grid(2,2) - 1
--- (circle(5) - 1) * (grid(2,2) - 1)
--- also (grid(2,2) + 1) is permitted
-
 data DotPattern =
   Grid Integer Integer |
   Ring Integer |
   DotPattern :* DotPattern |
-  Stack [ DotPattern ] |
   DotPattern :- Integer
  deriving (Show)
 
@@ -185,8 +178,6 @@ listPattern (p1 :* p2) = do
     q1
     q2
     
-listPattern (Stack ps) = []
-
 listPattern (p :- n) = take (length p' - fromInteger n) p'
   where p' = listPattern p
 
@@ -206,8 +197,8 @@ backgroundColor n
  | n <= 100 = Rgb 0.440 0.682 0.431
  | otherwise = Rgb 0.282 0.235 0.274
   
-createAnswerContent :: DotPattern -> AnyFont -> PDFReference PDFPage -> PDF ()
-createAnswerContent pattern font page = drawWithPage page $ do
+createAnswerContent :: DotPattern -> Text -> AnyFont -> AnyFont -> PDFReference PDFPage -> PDF ()
+createAnswerContent pattern label font font2 page = drawWithPage page $ do
   let count = countDots pattern
   withNewContext $ do
     withNewContext $ do
@@ -215,12 +206,20 @@ createAnswerContent pattern font page = drawWithPage page $ do
       fill $ Rectangle ((-10) :+ (-10)) ((cardWidth + 10) :+ (cardHeight + 10))
     withCardContext $ do
       applyMatrix $ translate (50 :+ 50)
-      setFillAlpha 0.5
+      setFillAlpha 0.6
       fillColor white
       centerText font (pack $ show count)
+    withCardContext $ do
+      let p = 3 
+      let f = PDFFont font2 p 
+      let w = textWidth f label
+      setFillAlpha 0.3
+      fillColor white
+      drawText $ text f 0 0 "https://github.com/kisonecat/countdot.hs"
+      drawText $ text f (100 - w) 0 label
   
-createPageContent :: DotPattern -> AnyFont -> PDFReference PDFPage -> PDF ()
-createPageContent pattern font page = drawWithPage page $ do
+createPageContent :: DotPattern -> PDFReference PDFPage -> PDF ()
+createPageContent pattern page = drawWithPage page $ do
   withCardContext $ do
     when showBorders $ withNewContext $ do 
       strokeColor red
@@ -228,17 +227,19 @@ createPageContent pattern font page = drawWithPage page $ do
       stroke $ Rectangle 0 (100 :+ 100)
     drawPattern pattern
 
-myFrontDocument :: AnyFont -> PDF ()
-myFrontDocument font = do
+myFrontDocument :: PDF ()
+myFrontDocument = do
     forM_ patterns $ \pattern -> do
       page <- addPage Nothing
-      createPageContent pattern font page
+      createPageContent pattern page
 
-myBackDocument :: AnyFont -> PDF ()
-myBackDocument font = do
-    forM_ patterns $ \pattern -> do
+myBackDocument :: AnyFont -> AnyFont -> PDF ()
+myBackDocument font font2 = do
+    forM_ [1 .. length patterns] $ \i -> do
+      let pattern = patterns !! (i - 1)
+      let label = pack $ (show i) ++ "/" ++ (show $ length patterns)
       page' <- addPage Nothing
-      createAnswerContent pattern font page'
+      createAnswerContent pattern label font font2 page'
  
 main :: IO()
 main = do
@@ -246,9 +247,10 @@ main = do
       putStrLn $ ", " ++ (show pattern) ++ " -- = " ++ (show $ countDots pattern)
 
     let rect = PDFRect 0 0 cardWidth cardHeight
-    Right helvetica <- mkStdFont Helvetica_Bold
+    Right helveticaBold <- mkStdFont Helvetica_Bold
+    Right helvetica <- mkStdFont Courier  
     runPdf "front.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
-        myFrontDocument helvetica
+        myFrontDocument 
     runPdf "back.pdf" (standardDocInfo { author="Jim Fowler", compressed = False}) rect $ do
-        myBackDocument helvetica
+        myBackDocument helveticaBold helvetica
   
