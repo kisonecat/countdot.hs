@@ -1,5 +1,7 @@
 # countdot.hs
 
+![Example of a few cards showing the front and back](./samples/example.png)
+
 These are some cards students can use to practice
 [subitizing](https://en.wikipedia.org/wiki/Subitizing) and counting by
 grouping.  Students could play a game like
