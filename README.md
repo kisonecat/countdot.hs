@@ -34,7 +34,7 @@ Or to place dots in a circle, you could use `Ring 5` which would produce
 
 ![Output of Ring 5](./samples/card002.png)
 
-The interesting thing about `DotPattern`s is that you can combnie these with "algebraic" operators like `:*` to "multiply" two dot patterns, e.g., `Grid 2 2 :* Ring 3` produces
+The interesting thing about `DotPattern`s is that you can combine these with "algebraic" operators like `:*` to "multiply" two dot patterns, e.g., `Grid 2 2 :* Ring 3` produces
 
 ![Output of Grid 2 2 :* Ring 3](./samples/card003.png)
 
