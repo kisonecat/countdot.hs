@@ -30,7 +30,7 @@ For example, to create a grid, you could use `Grid 3 4` which would produce
 
 ![Output of Grid 3 4](./samples/card001.png)
 
-For example, to place dots in a circle, you could use `Grid 5` which would produce
+Or to place dots in a circle, you could use `Ring 5` which would produce
 
 ![Output of Ring 5](./samples/card002.png)
 
