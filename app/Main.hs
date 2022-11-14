@@ -20,16 +20,55 @@ data DotPattern =
   DotPattern :- Integer
 
 patterns = [ (Ring 8 :- 1) :* (Grid 2 2 :- 1)
+           , Grid 8 4
+           , Ring 3
+           , Ring 5
+           , Ring 6
+           , Ring 6 :* Grid 2 1
+           , Ring 6 :* Grid 3 1
+           , Ring 6 :* Grid 2 2
+           , Ring 6 :* Grid 2 2 :- 1
+           , Grid 2 1 :* Grid 4 4
+           , Grid 3 2
+           , Ring 3 :* Grid 2 1
+           , Grid 2 1 :* Grid 2 1 :* Grid 1 2
+           , Grid 2 1 :* Grid 1 2 :* Grid 1 2
+           , Ring 3 :* Ring 3 :* Ring 3
+           , Grid 1 2 :* Grid 5 2
+           , Grid 4 4 :- 1
            , Ring 4
+           , Ring 4 :* Ring 4
            , Grid 2 2
+           , Grid 2 2 :- 1
+           , Grid 3 3 :- 1
+           , Ring 8 :- 1
+           , Grid 2 2 :* (Grid 2 2 :* Grid 2 2)
+           , Grid 3 3 :* (Grid 3 3) :- 1
+           , (Grid 3 3 :- 1) :* Grid 3 3
+           , Grid 4 3 :- 1
+           , Grid 3 3 :* Ring 5
+           , Grid 2 2 :* Grid 3 3
+           , Grid 7 7 
+           , Grid 3 3 :* Grid 2 2
+           , Ring 5 :* Ring 3
+           , Ring 5 :* Ring 5
+           , Ring 5 :* Ring 4
+           , Ring 5 :* Grid 3 3
+           , Ring 5 :* (Grid 3 3 :- 1)
+           , Grid 2 1 :* Ring 8
+           , Grid 3 3 :* (Ring 8 :- 1)
+           , Grid 2 2 :* Grid 5 5
+           , Grid 2 2 :* Grid 5 5 :- 1
+           , Grid 2 2 :* (Grid 5 5 :- 1)
+           , Ring 5 :* Grid 1 2
+           , Ring 5 :* Grid 5 4 
+           , Ring 5 :* Grid 5 5
+           , Ring 4 :* Grid 2 2
+           , Grid 2 1 :* (Grid 2 2 :* Grid 5 5)
+           , Grid 2 2 :* (Grid 2 2 :* Grid 5 5)
+           , Grid 2 2 :* (Grid 2 2 :* Grid 5 5) :- 1
+           , (Grid 2 2 :- 1) :* (Grid 2 2 :* Grid 5 5)
            ]
-
-data Dot = Dot
-  { dotX :: PDFFloat
-  , dotY :: PDFFloat
-  , dotScale :: PDFFloat
-  , dotAngle :: Angle 
-  }
 
 cardWidth :: Double
 cardWidth = 158.4567
@@ -43,8 +82,18 @@ inch = 72
 bleedMargin :: Double
 bleedMargin = 0.25 * inch
 
+withCardContext :: Draw () -> Draw ()
+withCardContext draw = do
+  withNewContext $ do
+    applyMatrix $ translate (0 :+ cardHeight / 2)
+    applyMatrix $ translate $ bleedMargin :+ 0
+    applyMatrix $ uniformScale ((cardWidth - 2 * bleedMargin) / 100)
+    applyMatrix $ translate $ 0 :+ (-50)
+    draw
+  where uniformScale x = scale x x
+    
 showBorders :: Bool
-showBorders = True 
+showBorders = True
 
 centerText :: AnyFont -> Text -> Draw ()
 centerText font s = do
@@ -60,33 +109,33 @@ centerText font s = do
     applyMatrix $ translate (0 :+ ((d-h)/2))
     drawText $ text f 0 0 s
 
-withDotContext :: Dot -> Draw () -> Draw ()
-withDotContext (Dot x y s a) d = do
-  withNewContext $ do
-    applyMatrix $ translate (x :+ y)
-    applyMatrix $ scale (s / 100) (s / 100)
-    applyMatrix $ rotate a
-    d
-    
-drawDot :: Dot -> Draw ()
-drawDot dot = do
-  withDotContext dot $ do
-    fill $ Rectangle 0 (100 :+ 100) 
-
 listPattern :: DotPattern -> [Draw ()]
 
 listPattern (Grid a b) = do
   x <- [0..a-1]
   y <- [0..b-1]
-  
-  let w :: PDFFloat
-      w = 100 / fromIntegral a
-      h :: PDFFloat
-      h = 100  / fromIntegral b
 
+  let a' :: PDFFloat
+      a' = fromIntegral a
+      b' :: PDFFloat
+      b'  = fromIntegral b
+      w = 90 / a'
+      h = 90 / b'
+      width = min w h
+  
+      marginX = (100 - width * a') / (a' - 1)
+      marginY = (100 - width * b') / (b' - 1)
+      margin = min marginX marginY
+  
+      offsetX :: PDFFloat
+      offsetX = (100 - ((a' - 1) * margin + a' * width)) / 2
+      offsetY :: PDFFloat
+      offsetY = (100 - ((b' - 1) * margin + b' * width)) / 2
+      
   pure $ do 
-    applyMatrix $ translate $ (w*fromIntegral x) :+ (h*fromIntegral y)
-    applyMatrix $ scale (w/120) (h/120) 
+    applyMatrix $ translate $ offsetX :+ offsetY 
+    applyMatrix $ translate $ ((width + margin)*fromIntegral x) :+ ((width + margin)*fromIntegral y)
+    applyMatrix $ scale (width / 100) (width / 100) 
     
 listPattern (Ring count) = do
   i <- [0..count-1]
@@ -94,7 +143,7 @@ listPattern (Ring count) = do
   pure $ do 
     applyMatrix $ translate $ 50 :+ 50 
     applyMatrix $ rotate (Degree ((360 :: PDFFloat) * (fromIntegral i) / (fromIntegral count)))
-    let s = sin (pi / fromIntegral count) / 1.7
+    let s = sin (pi / fromIntegral count) / 2.2
     applyMatrix $ translate $ (50 * (1 - s)) :+ 0
     applyMatrix $ scale s s
     applyMatrix $ translate $ (-50) :+ (-50)
@@ -121,33 +170,42 @@ drawPattern pattern = do
     withNewContext $ do
       d
       fill $ Rectangle 0 (100 :+ 100) 
+
+backgroundColor :: Integer -> Color
+backgroundColor n
+ | n <= 10 = Rgb 0.235 0.431 0.443
+ | n <= 100 = Rgb 0.440 0.682 0.431
+ | otherwise = Rgb 0.282 0.235 0.274
   
-createPageContent :: AnyFont -> PDFReference PDFPage -> PDF ()
-createPageContent font page = drawWithPage page $ do
+createAnswerContent :: DotPattern -> AnyFont -> PDFReference PDFPage -> PDF ()
+createAnswerContent pattern font page = drawWithPage page $ do
+  let count = countDots pattern
   withNewContext $ do
-    applyMatrix $ translate (0 :+ cardHeight / 2)
-    applyMatrix $ translate $ bleedMargin :+ 0
-    applyMatrix $ uniformScale ((cardWidth - 2 * bleedMargin) / 100)
-    applyMatrix $ translate $ 0 :+ (-50)
+    withNewContext $ do
+      fillColor $ backgroundColor count 
+      fill $ Rectangle ((-10) :+ (-10)) ((cardWidth + 10) :+ (cardHeight + 10))
+    withCardContext $ do
+      applyMatrix $ translate (50 :+ 50)
+      setFillAlpha 0.5
+      fillColor white
+      centerText font (pack $ show count)
+  
+createPageContent :: DotPattern -> AnyFont -> PDFReference PDFPage -> PDF ()
+createPageContent pattern font page = drawWithPage page $ do
+  withCardContext $ do
     when showBorders $ withNewContext $ do 
       strokeColor red
       setWidth 0.5
       stroke $ Rectangle 0 (100 :+ 100)
-    let pattern = (Ring 8 :- 1) :* (Grid 2 2 :- 1)
-    fillColor blue
-    withNewContext $ do
-      applyMatrix $ translate (50 :+ 50)
-      centerText font (pack $ show (countDots pattern))
-    fillColor black
     drawPattern pattern
-  where uniformScale x = scale x x
 
 myDocument :: AnyFont -> PDF ()
 myDocument font = do
-    page1 <- addPage Nothing
-    newSection ("Section") Nothing Nothing $ do
-     newSection ("Subsection") Nothing Nothing $ do
-        createPageContent font page1
+    forM_ patterns $ \pattern -> do
+      page' <- addPage Nothing
+      createAnswerContent pattern font page'
+      page <- addPage Nothing
+      createPageContent pattern font page
  
 main :: IO()
 main = do
