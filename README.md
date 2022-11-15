@@ -11,8 +11,7 @@ cards.
 ## Where to purchase?
 
 You can purchase a set of cards from 
-[makeplayingcards.com](https://www.makeplayingcards.com/sell/marketplace/countdot.html) using a [collection of dot patterns](https://github.com/kisonecat/countdot.hs/blob/main/app/Main.hs#L18-L89).
-
+[makeplayingcards.com](https://www.makeplayingcards.com/sell/marketplace/countdot.html) using a [collection of dot patterns](https://github.com/kisonecat/countdot.hs/blob/main/app/Main.hs#L28-L99).
 
 ## Algebra for dot patterns 
 
